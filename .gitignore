@@ -1,0 +1,13 @@
+# Allowlist: only tools and distribution docs belong in the repo.
+# Game folders, extracted game data, built patches and keys must never
+# be committed.
+/*
+!.gitignore
+!README.md
+!LICENSE
+!tools/
+!dist/
+dist/*
+!dist/readme.txt
+__pycache__/
+*.pyc
