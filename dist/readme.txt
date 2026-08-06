@@ -32,14 +32,9 @@ Note: if L / K do nothing right after loading an old save (from before
 you installed the patch), open the backlog once - the keys work from
 then on, permanently. Saves made after that are fine.
 
-Note (NUKITASHI 2): a handful of short bonus scenes bundled with the
-Append DLC still show English text in Japanese mode - about 200 lines
-across 5 script files (root.pfs.010, script\11_zz06.ast, 11_zz08.ast,
-11_zz09.ast, 11_zz10.ast, 11_zz11.ast). I couldn't find the Japanese
-for those - not having read the novel myself, I had nothing to check
-candidate text against, and nothing in the available game files
-pointed to a source. If anyone knows where this text comes from,
-please reach out (see Issues / contact below).
+Note (NUKITASHI 2): There's some cut content in both the japanese and western release. 
+It's not accessible in any version of the game, but I'll be releasing a patch for that soon.
+Some of it needs to be translated first.
 
 Install (NUKITASHI 1)
 ---------------------
@@ -86,7 +81,8 @@ builds exist: each carries the English text of its base game.
 
 Version history
 ---------------
-v1 (2026-07-20) - first release
+v1.1 (2026-08-06) - fixed some stray placeholder text
+v1   (2026-07-20) - first release
 
 Credits
 -------
