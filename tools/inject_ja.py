@@ -25,7 +25,10 @@ from pfs import PfsArchive
 
 LABEL = re.compile(rb'^\t\["([^"]+)"\] = \{', re.M)
 JA_SPAN = re.compile(rb'(ja = \{.*?)(\n\t*en = \{)', re.S)
-CJK = re.compile('[぀-ヿ一-鿿]'.encode("utf-8").decode("utf-8"))
+# The localizer's placeholder dialogue line is exactly "*テキスト*" (verified:
+# 49,162 occurrences in the N1 base, one form, no variants). It never appears
+# in real dialogue, so a bare token test is exact.
+PLACEHOLDER = '"*テキスト*"'.encode("utf-8")
 
 
 def effective_scripts(game_dir, extra=()):
@@ -65,9 +68,7 @@ def ja_span(data, seg):
 
 
 def is_placeholder(ja_bytes):
-    seg = ja_bytes.decode("utf-8", errors="replace")
-    cjk = len(CJK.findall(seg))
-    return "テキスト" in seg and cjk < 12
+    return PLACEHOLDER in ja_bytes
 
 
 def main(game_dir, jp_dir, out_dir, extra=()):

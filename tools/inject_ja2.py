@@ -41,7 +41,10 @@ JA_SPAN = re.compile(rb'(ja ?= ?\{.*?)(\n\t*en ?= ?\{)', re.S)
 JA_OPEN = re.compile(rb'\bja ?= ?\{')
 VO = re.compile(rb'\{"vo"[^}]*file="([^"]+)"')
 NAME = re.compile(rb'name ?= ?\{"([^"]*)"')
-CJK = re.compile('[぀-ヿ一-鿿]')
+# placeholder dialogue is exactly "*テキスト*" (one form, no variants); a bare
+# token test avoids the old CJK-count heuristic, which miscounted long JP
+# speaker names inside the ja span and skipped real placeholders (N1 bug).
+PLACEHOLDER = '"*テキスト*"'.encode("utf-8")
 
 DLC = re.compile(r'^(08_hw06_|12_in)')      # positionally aligned below
 NO_JP_SOURCE = re.compile(r'^11_zz')        # confirmed cut content, left EN
@@ -115,8 +118,7 @@ def ja_span(data, start, end):
 
 
 def is_placeholder(ja_bytes):
-    seg = ja_bytes.decode("utf-8", errors="replace")
-    return "テキスト" in seg and len(CJK.findall(seg)) < 12
+    return PLACEHOLDER in ja_bytes
 
 
 def build_jp_index(jp_dir):
@@ -236,7 +238,7 @@ def main(game_dir, jp_dir, out_dir, extra=()):
     best = effective_scripts(game_dir, extra)
     jp_index = build_jp_index(jp_dir)
     stats = dict(files=0, injected=0, kept_real=0, dlc_deferred=0,
-                 unresolved=0)
+                 no_jp_source=0, unresolved=0)
     for fn in sorted(best):
         arc, name = best[fn]
         a = PfsArchive(arc)
@@ -262,6 +264,8 @@ def main(game_dir, jp_dir, out_dir, extra=()):
             if len(match) != 1:
                 if DLC.match(fn):
                     stats["dlc_deferred"] += 1
+                elif NO_JP_SOURCE.match(fn):
+                    stats["no_jp_source"] += 1   # 11_zz cut content, leave EN
                 else:
                     stats["unresolved"] += 1
                     print(f"  UNRESOLVED: {fn} [{lab}] "
