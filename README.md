@@ -91,7 +91,8 @@ byte-identical patches.
 
 ## Version history
 
-- **v1** (2026-07-20) — first release, both games.
+- **v1.1** (2026-08-06) - fixed some stray placeholder text
+- **v1**   (2026-07-20) — first release, both games.
 
 ## Credits
 
