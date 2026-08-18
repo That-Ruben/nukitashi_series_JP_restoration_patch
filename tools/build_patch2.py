@@ -86,6 +86,19 @@ def main(script_dir, out_pfs):
                 with open(os.path.join(dirpath, fn), "rb") as f:
                     files.append((rel.replace(os.sep, "\\"), f.read()))
 
+    # pc/ja/route/append: the western build has no Japanese art for the
+    # append route-select screen at all, so New Game was a black screen in
+    # Japanese (see make_route_append.py)
+    route_root = os.path.join(AN, "ja_route2")
+    n_route = 0
+    for dirpath, _, names in os.walk(route_root):
+        for fn in sorted(names):
+            rel = os.path.relpath(os.path.join(dirpath, fn), route_root)
+            with open(os.path.join(dirpath, fn), "rb") as f:
+                files.append((rel.replace(os.sep, "\\"), f.read()))
+            n_route += 1
+    assert n_route == 8, f"expected 8 ja route/append sprites, got {n_route}"
+
     seen = {}
     for name, data in files:
         seen[name] = data

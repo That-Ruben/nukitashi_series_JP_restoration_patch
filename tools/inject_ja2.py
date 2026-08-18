@@ -121,6 +121,27 @@ def is_placeholder(ja_bytes):
     return PLACEHOLDER in ja_bytes
 
 
+def span_tail(data, start, end):
+    """Everything in a ja span after the ja table's closing brace.
+
+    JA_SPAN runs from `ja` up to the newline before `en`, so it carries the
+    field separator: `ja = { ... },`. The JP DLC blocks are lifted with the
+    balanced-brace parser instead, which stops at the `}` and drops that
+    comma - splicing them in raw produced `}` immediately followed by
+    `en={`, which is a Lua syntax error, and the whole script then failed to
+    load (v1.1 shipped 5,840 of them across the 12_in*/08_hw06_* append
+    scripts: black screen / hang on Susuko's route). Keep the original tail."""
+    return data[balanced_end(data, data.index(b"{", start)):end]
+
+
+def check_ja_separators(data, fn):
+    """Every ja span must still end in a field separator before `en`."""
+    bad = [m.start(1) for m in JA_SPAN.finditer(data)
+           if not m.group(1).rstrip().endswith((b",", b";"))]
+    assert not bad, (f"{fn}: {len(bad)} ja spans lost their separator "
+                     f"(first at byte {bad[0]}) - the script would not parse")
+
+
 def build_jp_index(jp_dir):
     """label -> [(stem, ja_bytes)] across all JP scripts."""
     index = {}
@@ -216,6 +237,7 @@ def align_dlc(out_dir, jp_dir):
                 if is_placeholder(ja_bytes):
                     pieces.append(data[cursor:span[0]])
                     pieces.append(jb["bytes"])
+                    pieces.append(span_tail(data, span[0], span[1]))
                     cursor = span[1]
                     stats["injected"] += 1
                 else:
@@ -225,6 +247,7 @@ def align_dlc(out_dir, jp_dir):
 
             strip = lambda b: JA_SPAN.sub(rb"\2", b)
             assert strip(out) == strip(data), f"non-ja bytes changed in {fn}"
+            check_ja_separators(out, fn)
             with open(path, "wb") as f:
                 f.write(out)
         assert jp_i == len(jp_blocks), (
@@ -281,6 +304,7 @@ def main(game_dir, jp_dir, out_dir, extra=()):
         # verify: everything outside replaced ja spans is untouched
         strip = lambda b: JA_SPAN.sub(rb"\2", b)
         assert strip(out) == strip(data), f"non-ja bytes changed in {fn}"
+        check_ja_separators(out, fn)
 
         with open(os.path.join(out_dir, fn), "wb") as f:
             f.write(out)
@@ -298,6 +322,7 @@ def main(game_dir, jp_dir, out_dir, extra=()):
     for fn in sorted(best):
         with open(os.path.join(out_dir, fn), "rb") as f:
             data = f.read()
+        check_ja_separators(data, fn)
         if any(is_placeholder(m.group(1)) for m in JA_SPAN.finditer(data)):
             if not NO_JP_SOURCE.match(fn):
                 bad.append(fn)

@@ -64,6 +64,23 @@ def read_one(t):
     return d
 
 
+def missing_report(west_ja, west_en):
+    """UI files the western build ships for en but not for ja.
+
+    The hash audit above can only see files that exist on the ja side, so it
+    was blind to a whole folder going missing - which is what happened to
+    pc/ja/route/append (New Game -> black screen in Japanese; fixed by
+    make_route_append.py). Report-only: everything here is a hole in the
+    western build's Japanese UI, whether or not we choose to fill it."""
+    gone = [p for p in sorted(west_en)
+            if p.replace("\\en\\", "\\ja\\") not in west_ja]
+    print("\n== present for en, missing for ja ==")
+    for p in gone:
+        print(f"  {p}")
+    print(f"{len(gone)} files")
+    return gone
+
+
 def main(restore=False):
     west_ja = effective(os.path.join(WEST, "root.pfs*"), "pc\\ja\\")
     jp_ja = effective(os.path.join(JP, "NUKITASHI2.pfs*"), "pc\\ja\\")
@@ -105,6 +122,8 @@ def main(restore=False):
     print("\n== summary ==")
     for k, v in n.items():
         print(f"{k:12} {v}")
+
+    missing_report(west_ja, west_other["en"])
 
     if restore:
         outroot = os.path.join(ROOT, "analysis", "ja_restore2")

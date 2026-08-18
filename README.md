@@ -91,6 +91,29 @@ byte-identical patches.
 
 ## Version history
 
+
+- **v1.2** (2026-08-18) — NUKITASHI 2 only, two fixes.
+
+  The append scripts (`12_in*`, `08_hw06_*`) failed to load. The injector
+  lifts the Japanese subtree two ways: the label-matched pass takes it with
+  a regex whose span ends `ja = { … },`, the positional DLC pass takes it
+  with the balanced-brace parser, which stops at the `}` and dropped the
+  field separator. `}` followed by `en={` is a Lua syntax error, so the
+  whole script failed to parse — v1.1 shipped 5,840 of them across 37 files,
+  taking out the whole Append DLC and the later chapters of one route, in
+  every language. The DLC pass now keeps the original tail, and every write
+  is checked for a surviving separator.
+
+  New Game was also a black screen in Japanese. `route.lua` switches that
+  screen to `ui_route_append` once the append content is installed, and its
+  sprites resolve under `pc/<ui language>/route/append/` — a folder the
+  western release ships for en, cn and tw only. The patch now supplies the
+  Japanese set, re-tiled from the Japanese release (its state strips are
+  254px apart, the western re-export 252px; the gutters are transparent, so
+  the re-tile is pixel-exact). The asset audit compares hashes and so could
+  not see a folder that was absent entirely; it now also reports every file
+  present for en and missing for ja.
+
 - **v1.1** (2026-08-06) - fixed some stray placeholder text
 - **v1**   (2026-07-20) — first release, both games.
 

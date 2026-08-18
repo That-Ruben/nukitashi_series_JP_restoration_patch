@@ -137,6 +137,9 @@ def main(west, jp, nip=None):
     print("== ja asset restore ==")
     run("ja_assets2.py", jp, "--restore")
 
+    print("== ja append route-select art ==")
+    run("make_route_append.py", jp)
+
     print("== engine patches ==")
     run("patch_system.py",
         os.path.join(AN, "extracted_en2_sys", "system"),
