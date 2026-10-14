@@ -33,10 +33,12 @@ PLACEHOLDER = '"*テキスト*"'.encode("utf-8")
 
 def effective_scripts(game_dir, extra=()):
     """lowercased-name -> (archive, exact-name), last archive wins.
-    Our own patch archives (.080+) are excluded; `extra` archives (e.g. the
-    NIP fan patch .069) are stacked after the game's own."""
+    Our own patch archives (.080+) and an installed NIP fan patch (.069)
+    are excluded — the official base must not pick up NIP's English;
+    `extra` archives (the NIP .069 for the .081 build) are stacked after
+    the game's own."""
     paths = [p for p in sorted(glob.glob(os.path.join(game_dir, "*.pfs*")))
-             if not re.search(r"\.pfs\.08\d$", p)]
+             if not re.search(r"\.pfs\.(08\d|069)$", p)]
     paths += list(extra)
     best = {}
     for p in paths:

@@ -85,7 +85,7 @@ def effective_scripts(game_dir, extra=()):
     Our own patch archives (.080+) are excluded; `extra` archives (e.g. a
     fan patch) are stacked after the game's own."""
     paths = [p for p in sorted(glob.glob(os.path.join(game_dir, "root.pfs*")))
-             if not re.search(r"\.pfs\.08\d$", p)]
+             if not re.search(r"\.pfs\.(08\d|069)$", p)]
     paths += list(extra)
     best = {}
     for p in paths:

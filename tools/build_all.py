@@ -32,7 +32,7 @@ def run(script, *args):
 
 def game_archives(game_dir, base):
     return [p for p in sorted(glob.glob(os.path.join(game_dir, base + "*")))
-            if not re.search(r"\.pfs\.08\d$", p)]
+            if not re.search(r"\.pfs\.(08\d|069)$", p)]
 
 
 def extract(archives, match, outroot, flatten_to=None):
@@ -106,7 +106,7 @@ def main(west, jp, nip=None):
     run("edit_keyboard.py")
 
     print("== ja asset restore ==")
-    run("ja_assets.py", jp, "--restore")
+    run("ja_assets.py", jp, west, "--restore")
 
     print("== engine patches ==")
     run("patch_system.py")

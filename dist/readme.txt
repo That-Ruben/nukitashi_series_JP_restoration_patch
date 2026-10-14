@@ -1,6 +1,6 @@
 NUKITASHI 1 & 2 - Japanese Language Restoration Patch
 ======================================================
-v1.2 - by That-Ruben
+v1.3 - by That-Ruben
 
 Makes NUKITASHI and NUKITASHI 2 readable in Japanese, English, or both
 at once. The western (Shiravune) releases already contain the Japanese
@@ -81,6 +81,7 @@ builds exist: each carries the English text of its base game.
 
 Version history
 ---------------
+v1.3 (2026-10-15) - fixed some compatibility issues
 v1.2 (2026-08-18) - NUKITASHI 2: fixed DLC script error from v1.1
 v1.1 (2026-08-06) - fixed some stray placeholder text
 v1   (2026-07-20) - first release
@@ -97,3 +98,4 @@ Issues / contact
 ----------------
 Bug reports and compatibility requests:
 https://github.com/That-Ruben/nukitashi_series_JP_restoration_patch
+https://that-ruben.vercel.app/nukitashi

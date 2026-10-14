@@ -19,8 +19,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pfs import PfsArchive
 
-WEST = os.path.join(ROOT, "NUKITASHI 2")
 _dirs = [a for a in sys.argv[1:] if a != "--restore"]
+# argv: JP_DIR [WEST_DIR]
+WEST = _dirs[1] if len(_dirs) > 1 else os.path.join(ROOT, "NUKITASHI 2")
 JP = _dirs[0] if _dirs else r"O:\Games\nukitashigames\remastered2"
 
 # The JP release kept the ORIGINAL UI tree (pc/ja/adv, flat config/,
@@ -36,6 +37,11 @@ JP = _dirs[0] if _dirs else r"O:\Games\nukitashigames\remastered2"
 #   AND has the "save here" hover with "No data" still visible underneath
 #   that looked broken in N1 (Ruben tested); western versions behave.
 EXCLUDES = {
+    # backlog: JP overlay.png is three framed boxes laid out for the JP
+    # backlog (the remaster uses separator lines; text ran past the
+    # frames); pin_backlog.png is the scrollbar knob, no language content
+    "pc\\ja\\blog\\overlay.png",
+    "pc\\ja\\blog\\pin_backlog.png",
     "pc\\ja\\mw\\choice.png",
     "pc\\ja\\save\\bt_data.png",
     "pc\\ja\\save\\bt_delete.png",
@@ -46,7 +52,7 @@ EXCLUDES = {
 def effective(dirpat, prefix):
     best = {}
     for p in sorted(glob.glob(dirpat)):
-        if re.search(r"\.pfs\.08\d$", p):
+        if re.search(r"\.pfs\.(08\d|069)$", p):
             continue
         a = PfsArchive(p)
         for e in a.entries:
@@ -83,6 +89,7 @@ def missing_report(west_ja, west_en):
 
 def main(restore=False):
     west_ja = effective(os.path.join(WEST, "root.pfs*"), "pc\\ja\\")
+    assert west_ja, f"no western archives found in {WEST}"
     jp_ja = effective(os.path.join(JP, "NUKITASHI2.pfs*"), "pc\\ja\\")
     west_other = {l: effective(os.path.join(WEST, "root.pfs*"),
                                f"pc\\{l}\\") for l in ("en", "cn", "tw")}

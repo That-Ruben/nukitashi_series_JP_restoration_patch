@@ -18,8 +18,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pfs import PfsArchive
 
-WEST = os.path.join(ROOT, "NUKITASHI")
 _dirs = [a for a in sys.argv[1:] if a != "--restore"]
+# argv: JP_DIR [WEST_DIR]
+WEST = _dirs[1] if len(_dirs) > 1 else os.path.join(ROOT, "NUKITASHI")
 JP = _dirs[0] if _dirs else r"O:\Games\nukitashigames\remastered1"
 
 # Not restored (reviewed 2026-07-20):
@@ -35,12 +36,25 @@ JP = _dirs[0] if _dirs else r"O:\Games\nukitashigames\remastered1"
 #   a color re-grade of the same-dimension JP art — aesthetic revision,
 #   not anglicization (pending Ruben's call).
 EXCLUDES = {
+    # backlog: JP overlay.png is three framed boxes laid out for the JP
+    # backlog (the remaster uses separator lines; text ran past the
+    # frames); pin_backlog.png is the scrollbar knob, no language content
+    "pc\\ja\\blog\\overlay.png",
+    "pc\\ja\\blog\\pin_backlog.png",
     "pc\\ja\\mw\\choice.png",
     "pc\\ja\\save\\bg.png",
     "pc\\ja\\save\\bg2.png",
     "pc\\ja\\save\\bt_data.png",
     "pc\\ja\\save\\bt_delete.png",
     "pc\\ja\\save\\new.png",
+    # JP extra art is the older layout: bt_gallery/bt_scene sprite sheets
+    # are smaller with a different state pitch than the clips in the tbl
+    # (slots showed the wrong slice), page_title is 3px larger than its
+    # box, bg is pixel-identical anyway
+    "pc\\ja\\extra\\bg.png",
+    "pc\\ja\\extra\\bt_gallery.png",
+    "pc\\ja\\extra\\bt_scene.png",
+    "pc\\ja\\extra\\page_title.png",
 } | {f"pc\\ja\\title\\start_{c}.png" for c in
      ("fumino", "hinami", "ikuko", "jun", "misaki", "nanase", "rei", "toka")}
 
@@ -48,7 +62,7 @@ EXCLUDES = {
 def effective(dirpat, prefix):
     best = {}
     for p in sorted(glob.glob(dirpat)):
-        if re.search(r"\.pfs\.08\d$", p):
+        if re.search(r"\.pfs\.(08\d|069)$", p):
             continue
         a = PfsArchive(p)
         for e in a.entries:
@@ -68,6 +82,7 @@ def read_one(t):
 
 def main(restore=False):
     west_ja = effective(os.path.join(WEST, "NUKITASHI.pfs*"), "pc\\ja\\")
+    assert west_ja, f"no western archives found in {WEST}"
     jp_ja = effective(os.path.join(JP, "NUKITASHI.pfs*"), "pc\\ja\\")
     west_other = {l: effective(os.path.join(WEST, "NUKITASHI.pfs*"),
                                f"pc\\{l}\\") for l in ("en", "cn", "tw")}

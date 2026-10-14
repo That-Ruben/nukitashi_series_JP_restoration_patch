@@ -3,6 +3,7 @@
   analysis/patched_sys/list_windows.tbl
      - advkey: L (76) -> LANG -> lang_toggle_jaen, K (75) -> SUBV ->
        sublang_toggle, in both duplicate advkey blocks (Lua last-wins)
+     - movies: ja plays the en movie files (no ja files ship in the west)
   analysis/patched_sys/lang.lua
      - lang_toggle_jaen(): main/sub/ui toggle ja <-> en
      - sublang_toggle(): K key; runtime switch of the engine's dormant
@@ -23,6 +24,7 @@
        return-to-title stops it explicitly
 """
 import os
+import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -120,8 +122,38 @@ def patch_tbl():
     t = t.replace(old_tbl,
                   'tbl={LANG="lang_toggle_jaen",SUBV="sublang_toggle",'
                   'CLICK="adv_click",')
+    t, nm = patch_movies(t)
     write("list_windows.tbl", t)
-    print("patched list_windows.tbl (L+K key bindings x2)")
+    print(f"patched list_windows.tbl (L+K key bindings x2, "
+          f"{nm} ja movies -> en files)")
+
+
+def patch_movies(t):
+    """The western release ships each movie only as _en/_cn/_tw files; the
+    ja entry (no suffix) names a file that isn't there (N1) or is missing
+    from the table altogether (N2), so in Japanese every opening/ending
+    plays as a black screen. Point the ja entry at the en file."""
+    eol = "\r\n" if "\r\n" in t else "\n"
+    start = t.index(f"{eol}movie={{{eol}") + len(eol)
+    end = t.index(f"{eol}}},", start)
+    block = t[start:end]
+    en = dict(re.findall(r'^(\w+)_en=\{file="(\w+)"', block, flags=re.M))
+    assert en, "no _en movie entries found"
+    lines = block.split(eol)
+    out = []
+    for ln in lines:
+        m = re.match(r'(\w+)=\{file="\w+"(.*)$', ln)
+        if m and m.group(1) in en:          # existing ja entry (N1)
+            key = m.group(1)
+            ln = f'{key}={{file="{en.pop(key)}"{m.group(2)}'
+        m = re.match(r'(\w+)_en=\{file="\w+"(.*)$', ln)
+        if m and m.group(1) in en:          # no ja entry (N2): add one
+            key = m.group(1)
+            out.append(f'{key}={{file="{en.pop(key)}"{m.group(2)}')
+        out.append(ln)
+    assert not en, f"unhandled movies: {en}"
+    n = len(re.findall(r'^(\w+)_en=', block, flags=re.M))
+    return t[:start] + eol.join(out) + t[end:], n
 
 
 def patch_lang_lua():
