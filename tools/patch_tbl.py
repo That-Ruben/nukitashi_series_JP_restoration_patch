@@ -9,6 +9,10 @@ Nukitashi's list_windows_<lang>.tbl files (port of the HENPRI patcher).
   smaller text above the message text, JP-capable font06 for every entry
   since the sub slot always holds ja or en.
 
+- en/ja only: a YES/NO row on the Sound tab for the engine's hidden
+  "lower music during voice" flag (conf.fl_bgmvo); label art comes from
+  make_bgmduck.py.
+
 Usage: python patch_tbl.py IN_TBL OUT_TBL
 """
 import os
@@ -136,6 +140,54 @@ def patch_group(lines, gname, current):
     lines[start:end + 1] = out
 
 
+BGMVO_DY = 62    # row pitch on the Sound tab (sound_bg.png rows every 62px)
+
+
+def insert_bgmvo_toggle(lines):
+    """Sound tab: a YES/NO row below "Click to stop voice" for the engine's
+    existing voice-ducking flag conf.fl_bgmvo (music drops to config bgmvo
+    while a voice plays; stock game had no control for it). Cloned from the
+    voiceskip pair, one row lower; the label is drawn into sound_bg.png by
+    make_bgmduck.py."""
+    idx = [i for i, ln in enumerate(lines)
+           if re.match(r'\t\tvoiceskip[12] = \{ name="voiceskip[12]"', ln)]
+    assert len(idx) == 2, f"expected the voiceskip pair, found {len(idx)}"
+    new = []
+    for n, i in enumerate(idx, 1):
+        ln = lines[i]
+        other = 3 - n
+        ln = ln.replace(f'voiceskip{n} = {{ name="voiceskip{n}"',
+                        f'bgmvo{n} = {{ name="bgmvo{n}"')
+        ln = ln.replace(f'p2="voiceskip{other}"', f'p2="bgmvo{other}"')
+        ln = ln.replace('def="voiceskip"', 'def="fl_bgmvo"')
+        ln = re.sub(r'id="z\.bt\.0[12]"', f'id="z.bt.1{n + 1}"', ln)
+        y = int(re.search(r' y=(\d+),', ln).group(1))
+        ln = ln.replace(f' y={y},', f' y={y + BGMVO_DY},', 1)
+        assert "voiceskip" not in ln, ln
+        new.append(ln)
+    lines[idx[-1] + 1:idx[-1] + 1] = new
+    print("  Sound tab: bgmvo YES/NO row")
+
+
+def fix_select_aread_ja(lines):
+    """The ja font for already-chosen choices (select_aread) has left=0
+    while the normal one (select) has left=-440, both width=1600 — so
+    previously chosen choices were drawn 440px right of their box. The
+    western release never displayed ja, so the bad entry went unnoticed."""
+    n = 0
+    in_aread = False
+    for i, ln in enumerate(lines):
+        if re.match(r"\t\t\w+ = \{", ln):
+            in_aread = ln.startswith("\t\tselect_aread = {")
+        elif in_aread and ln.startswith("\t\t\tja = {"):
+            old = "left=0, top=8, width=1600,"
+            assert old in ln, ln
+            lines[i] = ln.replace(old, "left=-440, top=8, width=1600,")
+            n += 1
+    assert n == 2, f"expected 2 select_aread ja entries, fixed {n}"
+    print(f"  ja select_aread position x{n}")
+
+
 def patch_file(path_in, path_out):
     with open(path_in, "r", encoding="utf-8", newline="") as f:
         lines = f.readlines()
@@ -143,6 +195,10 @@ def patch_file(path_in, path_out):
         patch_group(lines, f"ui_config1_{l}", current=l)
     insert_sub_entries(lines)
     insert_langbtn(lines)
+    fix_select_aread_ja(lines)
+    # labels exist only in the en/ja sound_bg art we generate
+    if re.search(r"_(en|ja)\.tbl$", path_in):
+        insert_bgmvo_toggle(lines)
 
     start, end = find_group(lines, "ui_config1_en")
     eol = "\r\n" if lines[start].endswith("\r\n") else "\n"

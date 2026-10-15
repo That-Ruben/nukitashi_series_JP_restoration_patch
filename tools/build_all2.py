@@ -133,6 +133,11 @@ def main(west, jp, nip=None):
     run("make_button.py")
     run("make_langbtn.py")
     run("edit_keyboard.py")
+    extract(west_arcs, lambda l: l in ("pc\\en\\config3\\sound_bg.png",
+                                       "pc\\ja\\config3\\sound_bg.png"),
+            os.path.join(AN, "snd_src"))
+    run("make_bgmduck.py", os.path.join(AN, "snd_src"),
+        os.path.join(AN, "kb_edit"))
 
     print("== ja asset restore ==")
     run("ja_assets2.py", jp, west, "--restore")
