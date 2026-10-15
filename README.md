@@ -92,6 +92,9 @@ byte-identical patches.
 ## Version history
 
 
+- **v1.5** (2026-10-15) - fixed japanese text alignment issue in route choices
+- **v1.4** (2026-10-15) - added setting for music volume during voice
+- **v1.3** (2026-10-15) - fixed some compatibility issues
 - **v1.2** (2026-08-18) - NUKITASHI 2: fixed DLC script error from v1.1
 - **v1.1** (2026-08-06) - fixed some stray placeholder text
 - **v1**   (2026-07-20) — first release, both games.
