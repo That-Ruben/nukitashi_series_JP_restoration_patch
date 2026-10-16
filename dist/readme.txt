@@ -1,6 +1,6 @@
 NUKITASHI 1 & 2 - Japanese Language Restoration Patch
 ======================================================
-v1.5 - by That-Ruben
+v1.6 - by That-Ruben
 
 Makes NUKITASHI and NUKITASHI 2 readable in Japanese, English, or both
 at once. The western (Shiravune) releases already contain the Japanese
@@ -81,6 +81,7 @@ builds exist: each carries the English text of its base game.
 
 Version history
 ---------------
+v1.6 (2026-10-16) - fixed jp bg image in kb/voice config page
 v1.5 (2026-10-15) - fixed japanese text alignment issue in route choices
 v1.4 (2026-10-15) - added setting for music volume during voice
 v1.3 (2026-10-15) - fixed some compatibility issues

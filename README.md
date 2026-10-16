@@ -92,6 +92,7 @@ byte-identical patches.
 ## Version history
 
 
+- **v1.6** (2026-10-16) - fixed jp bg image in kb/voice config page
 - **v1.5** (2026-10-15) - fixed japanese text alignment issue in route choices
 - **v1.4** (2026-10-15) - added setting for music volume during voice
 - **v1.3** (2026-10-15) - fixed some compatibility issues

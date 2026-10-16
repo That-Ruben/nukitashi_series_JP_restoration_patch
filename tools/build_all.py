@@ -15,6 +15,7 @@ assemble archives.
 import glob
 import os
 import re
+import shutil
 import subprocess
 import sys
 
@@ -109,6 +110,15 @@ def main(west, jp, nip=None):
             os.path.join(AN, "snd_src"))
     run("make_bgmduck.py", os.path.join(AN, "snd_src"),
         os.path.join(AN, "kb_edit"))
+    # config.lua draws config1/bg2 behind every config page; the western
+    # release ships it for en/cn/tw only (the Voice and Keyboard pages have
+    # no other background, so they were black in ja). Their bg2 is
+    # byte-identical to the ja config1/bg, which we ship under that name.
+    bgsrc = os.path.join(AN, "bg2_src")
+    extract(west_arcs, lambda l: l == "pc\\ja\\config1\\bg.png", bgsrc)
+    bg2 = os.path.join(AN, "kb_edit", "pc", "ja", "config1", "bg2.png")
+    os.makedirs(os.path.dirname(bg2), exist_ok=True)
+    shutil.copyfile(os.path.join(bgsrc, "pc", "ja", "config1", "bg.png"), bg2)
 
     print("== ja asset restore ==")
     run("ja_assets.py", jp, west, "--restore")
