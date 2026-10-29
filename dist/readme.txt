@@ -1,6 +1,6 @@
 NUKITASHI 1 & 2 - Japanese Language Restoration Patch
 ======================================================
-v1.6 - by That-Ruben
+v1.7 - by That-Ruben
 
 Makes NUKITASHI and NUKITASHI 2 readable in Japanese, English, or both
 at once. The western (Shiravune) releases already contain the Japanese
@@ -21,10 +21,10 @@ Features
   text. Off by default.
 - Voice playback is no longer interrupted by the backlog, the config /
   save / load screens, or quicksaves - only a new voice line stops it
-- The popup menu closes 3 seconds after the mouse leaves it instead
-  of 5 (I would have liked to make it 1, but the side menu in this
-  game is actually broken, like it doesn't detect your mouse and
-  closes while you hover over it)
+- The popup menu closes 1 second after the mouse leaves it instead
+  of 5. The side menu is now properly detected as part of the menu
+  (in the original game it wasn't, so the menu closed while you were
+  hovering over it), and hovering the right edge also opens the menu
 - Restored several authentic Japanese UI graphics that the localization
   had replaced with English versions
 
@@ -81,6 +81,7 @@ builds exist: each carries the English text of its base game.
 
 Version history
 ---------------
+v1.7 (2026-10-29) - fixed the side menu closing while you hover over it (a bug in the original game, not caused by this patch), popup menu now closes after 1 second
 v1.6 (2026-10-16) - fixed jp bg image in kb/voice config page
 v1.5 (2026-10-15) - fixed japanese text alignment issue in route choices
 v1.4 (2026-10-15) - added setting for music volume during voice

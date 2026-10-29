@@ -123,6 +123,9 @@ def main(west, jp, nip=None):
     print("== ja asset restore ==")
     run("ja_assets.py", jp, west, "--restore")
 
+    print("== hover-menu masks ==")
+    run("make_dockarea.py")
+
     print("== engine patches ==")
     run("patch_system.py")
     for lang in ("en", "cn", "tw", "ja"):

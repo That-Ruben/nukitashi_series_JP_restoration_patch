@@ -14,7 +14,7 @@ option was hidden. This project restores it:
   the other language in a smaller font above the text. Off by default.
 - Voice playback survives the backlog, config/save/load screens, and
   quicksaves — only a new voice line interrupts it
-- The popup menu closes 3 seconds after the mouse leaves it, not 5
+- The popup menu closes 1 second after the mouse leaves it, not 5, and the side menu now counts as part of it (the original game did not detect the mouse there, so the menu closed while you hovered over it); hovering the right edge also opens the menu
 - Restored several authentic Japanese UI graphics the localization had
   replaced with English versions
 - The new hotkeys are documented on the Config → KEYBOARD screen
@@ -92,6 +92,7 @@ byte-identical patches.
 ## Version history
 
 
+- **v1.7** (2026-10-29) - fixed the side menu closing while you hover over it (a bug in the original game, not caused by this patch), popup menu now closes after 1 second
 - **v1.6** (2026-10-16) - fixed jp bg image in kb/voice config page
 - **v1.5** (2026-10-15) - fixed japanese text alignment issue in route choices
 - **v1.4** (2026-10-15) - added setting for music volume during voice

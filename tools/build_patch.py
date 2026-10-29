@@ -60,6 +60,13 @@ def main(script_dir, out_pfs):
         with open(os.path.join(AN, "btn", f"bt_language_{lang}.png"), "rb") as f:
             files.append((f"pc\\ja\\config1\\bt_language_{lang}.png", f.read()))
 
+    # hover-menu hit masks incl. the right column (make_dockarea.py)
+    for mask in ("dockarea_l", "dockarea2_l"):
+        with open(os.path.join(AN, "dockarea", f"{mask}.png"), "rb") as f:
+            data = f.read()
+        for lang in ("ja", "en", "cn", "tw"):
+            files.append((f"pc\\{lang}\\mw\\{mask}.png", data))
+
     for sprite in ("bt_lang", "bt_sublang"):
         with open(os.path.join(AN, f"{sprite}.png"), "rb") as f:
             data = f.read()

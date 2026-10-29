@@ -225,16 +225,14 @@ def patch_adv_mw_lua():
 
 def patch_vsync_lua():
     t = read(os.path.join("adv", "vsync.lua"))
-    # 1000 was too aggressive: the right-side button column sits OUTSIDE the
-    # engine's dockarea hover region (dev oversight the 5s delay papered
-    # over), so the timer runs even with the mouse on Save/Load. 3s keeps
-    # those usable; the lock button covers anyone who wants it pinned.
+    # The stock 5s papered over the right-side Save/Load column sitting
+    # outside the hover zones; make_dockarea.py adds it, so 1s is enough.
     old = "\t\t\tif (advtime - oldtime) > 5000 then"
     assert t.count(old) == 1, "vsync dock-close anchor not found"
-    t = t.replace(old, "\t\t\tif (advtime - oldtime) > 3000 then"
-                       "\t-- 5000->3000 (language mod)")
+    t = t.replace(old, "\t\t\tif (advtime - oldtime) > 1000 then"
+                       "\t-- 5000->1000 (language mod)")
     write("vsync.lua", t)
-    print("patched vsync.lua (menu close delay 5000 -> 3000 ms)")
+    print("patched vsync.lua (menu close delay 5000 -> 1000 ms)")
 
 
 def patch_voicekeep():

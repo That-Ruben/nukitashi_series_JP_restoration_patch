@@ -188,9 +188,27 @@ def fix_select_aread_ja(lines):
     print(f"  ja select_aread position x{n}")
 
 
+DOCKAREA = {  # see make_dockarea.py
+    'dockarea = { name="dockarea", file="mw/dockarea64", id="mw.-1", x=0, y=836, w=1600, h=64,':
+    'dockarea = { name="dockarea", file="mw/dockarea_l", id="mw.-1", x=0, y=541, w=1600, h=359,',
+    'dockarea2 = { name="dockarea2", file="mw/base", id="mw.-2", x=360, y=868, w=1080, h=32,':
+    'dockarea2 = { name="dockarea2", file="mw/dockarea2_l", id="mw.-2", x=360, y=541, w=1240, h=359,',
+}
+
+
+def fix_dockarea(lines):
+    """Hover-menu zones also cover the right-side Save/Load column."""
+    for old, new in DOCKAREA.items():
+        idx = [i for i, ln in enumerate(lines) if old in ln]
+        assert len(idx) == 1, f"expected 1 dockarea anchor, found {len(idx)}"
+        lines[idx[0]] = lines[idx[0]].replace(old, new)
+    print("  hover menu zones + right column")
+
+
 def patch_file(path_in, path_out):
     with open(path_in, "r", encoding="utf-8", newline="") as f:
         lines = f.readlines()
+    fix_dockarea(lines)
     for l in ("en", "cn", "tw"):
         patch_group(lines, f"ui_config1_{l}", current=l)
     insert_sub_entries(lines)

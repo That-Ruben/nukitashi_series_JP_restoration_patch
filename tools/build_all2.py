@@ -145,6 +145,9 @@ def main(west, jp, nip=None):
     print("== ja append route-select art ==")
     run("make_route_append.py", jp)
 
+    print("== hover-menu masks ==")
+    run("make_dockarea.py")
+
     print("== engine patches ==")
     run("patch_system.py",
         os.path.join(AN, "extracted_en2_sys", "system"),
